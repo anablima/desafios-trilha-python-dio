@@ -42,6 +42,7 @@ def depositar_valor(saldo, extrato):
     # Se o valor informado não for válido (zero ou negativo), informa o usuário.
     else:
         print("Operação falhou! O valor informado é inválido.")
+        return saldo, extrato
 
 def sacar_valor(saldo, extrato):
     # Solicita ao usuário o valor que deseja sacar e converte para float.
