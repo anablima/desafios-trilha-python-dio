@@ -137,21 +137,20 @@ while True:
         print("Operação inválida, por favor selecione novamente a operação desejada.")
 
 
-# Resumo da lógica utilizada neste desafio:
-# - O programa apresenta um menu interativo com opções de depósito, saque, extrato e sair.
-# - Existem variáveis globais que representam o saldo, o limite por saque, o extrato
-#   (como string) e o contador de saques.
-# - As funções `depositar_valor` e `sacar_valor` solicitam valores ao usuário e
-#   realizam validações básicas (valor positivo, limite de saque, saldo disponível).
-# - A função `exibir_extrato` imprime o histórico de transações e o saldo atual.
-# - Observações importantes sobre o comportamento atual do código:
-#   * As funções manipulam variáveis locais (`saldo` e `extrato`) e, na forma
-#     atual, nem sempre retornam os valores atualizados ao escopo chamador.
-#   * Em `sacar_valor`, há um `return` que acontece antes do incremento de
-#     `numero_saques`, portanto o contador de saques não será atualizado como
-#     esperado quando o saque for bem-sucedido.
-#   * Para que o programa atualize corretamente o saldo/extrato, as funções
-#     deveriam retornar os valores modificados e o loop principal deveria
-#     reatribuir `saldo, extrato = depositar_valor(saldo, extrato)` (ou usar
-#     variáveis globais de forma controlada).
+"""
+Resumo da lógica utilizada neste desafio:
+- O programa apresenta um menu interativo com opções de depósito, saque, extrato e sair.
+- Existem variáveis globais que representam o saldo, o limite por saque, o extrato
+    (como string) e o contador de saques.
+- As funções `depositar_valor` e `sacar_valor` solicitam valores ao usuário e 
+    realizam validações básicas (valor positivo, limite de saque, saldo disponível).
+- A função `exibir_extrato` imprime o histórico de transações e o saldo atual.
+
+Observações importantes sobre o comportamento do código:
+- As funções agora retornam corretamente os valores atualizados de saldo e extrato
+- Em `sacar_valor`, o incremento de numero_saques foi movido antes do return
+- O loop principal foi atualizado para reatribuir os valores retornados pelas funções
+- Foram adicionados tratamentos de erro para valores inválidos (try/except)
+- As funções foram modularizadas para melhor organização do código
+"""
 
