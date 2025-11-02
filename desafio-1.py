@@ -1,8 +1,13 @@
-"""Aplicação bancária simples (versão expandida)
+"""
+Aplicação bancária simples (versão expandida)
 Objetivo: demonstrar operações de um banco fictício (depósito, saque, extrato) e agora
           incluir cadastro de clientes e contas, além de listagem.
 
-Instruções: O código foi escrito de forma didática, comentado linha a linha.
+Regras de negócio:
+- Depósitos devem ser positivos.
+- Saques limitados a 3 por sessão, máximo R$ 500,00 cada.
+- Extrato detalha todas as operações.
+- Clientes identificados por CPF único.
 """
 
 # ========================= SEÇÃO: CONSTANTES E ESTADO GLOBAL =========================
@@ -31,17 +36,19 @@ AGENCIA_PADRAO = "0001"        # Código fixo de agência para contas criadas.
 
 # ========================= SEÇÃO: FUNÇÕES UTILITÁRIAS =========================
 
+# Função para encontrar cliente por CPF.
 def encontrar_cliente_por_cpf(cpf):  # Recebe uma string de CPF sem formatação.
-    """Retorna o dicionário do cliente se existir, senão None."""
-    for cliente in clientes:             # Percorre a lista global de clientes.
+    #Retorna o dicionário do cliente se existir, senão None.
+    for cliente in clientes:            # Percorre a lista global de clientes.
         if cliente["cpf"] == cpf:       # Compara o CPF fornecido com o armazenado.
             return cliente              # Se bater, retorna o cliente.
     return None                         # Caso nenhum cliente corresponda, retorna None.
 
 # ========================= SEÇÃO: OPERAÇÕES FINANCEIRAS =========================
 
+# Função de depósito.
 def depositar_valor():  # Não recebe saldo diretamente: usa variável global para simplicidade didática.
-    global saldo                     # Indica que vamos modificar o saldo global.
+    global saldo # Indica que vamos modificar o saldo global.
     # Solicita entrada do usuário para o depósito.
     valor_str = input("Informe o valor do depósito: ")
     try:                              # Tenta converter para float.
@@ -56,24 +63,25 @@ def depositar_valor():  # Não recebe saldo diretamente: usa variável global pa
     extrato.append(f"Depósito: R$ {valor:.2f}")  # Registra a linha no extrato.
     print(f"Depósito realizado com sucesso. Saldo atual: R$ {saldo:.2f}")  # Feedback.
 
+# Função de saque.
 def sacar_valor():  # Função de saque usando estado global simplificado.
-    global saldo, numero_saques       # Vamos alterar saldo e contador de saques.
+    global saldo, numero_saques         # Vamos alterar saldo e contador de saques.
     if numero_saques >= LIMITE_SAQUES:  # Verifica se atingiu limite de saques.
         print("Operação falhou! Limite de saques atingido.")
-        return                        # Interrompe execução.
+        return                          # Interrompe execução.
     valor_str = input("Informe o valor do saque: ")  # Solicita valor.
-    try:                              # Conversão para float.
+    try:                                # Conversão para float.
         valor = float(valor_str)
-    except ValueError:                # Erro de conversão.
+    except ValueError:                  # Erro de conversão.
         print("Operação falhou! Valor inválido.")
         return
-    if valor <= 0:                    # Validação de valor positivo.
+    if valor <= 0:                       # Validação de valor positivo.
         print("Operação falhou! Valor precisa ser positivo.")
         return
-    if valor > saldo:                 # Conferência de saldo suficiente.
+    if valor > saldo:                     # Conferência de saldo suficiente.
         print("Operação falhou! Saldo insuficiente.")
         return
-    if valor > LIMITE_VALOR_SAQUE:    # Checa limite monetário por saque.
+    if valor > LIMITE_VALOR_SAQUE:       # Checa limite monetário por saque.
         print("Operação falhou! Valor excede limite por saque.")
         return
     saldo -= valor                    # Debita do saldo.
@@ -81,6 +89,7 @@ def sacar_valor():  # Função de saque usando estado global simplificado.
     extrato.append(f"Saque:    R$ {valor:.2f}")  # Registra no extrato.
     print(f"Saque realizado. Saldo atual: R$ {saldo:.2f}")  # Mensagem de sucesso.
 
+# Função de exibição de extrato.
 def exibir_extrato():  # Mostra extrato formatado.
     print("\n================ EXTRATO ================")  # Cabeçalho visual.
     if not extrato:                     # Verifica se lista está vazia.
@@ -93,6 +102,7 @@ def exibir_extrato():  # Mostra extrato formatado.
 
 # ========================= SEÇÃO: OPERAÇÕES DE CLIENTE E CONTA =========================
 
+# Função de cadastro de cliente.
 def cadastrar_cliente():  # Captura dados de um novo cliente e armazena.
     cpf = input("Informe CPF (somente números): ").strip()  # Lê CPF sem formatação.
     if encontrar_cliente_por_cpf(cpf):                       # Verifica duplicidade.
@@ -109,6 +119,7 @@ def cadastrar_cliente():  # Captura dados de um novo cliente e armazena.
     })
     print("Cliente cadastrado com sucesso.")              # Confirmação.
 
+# Função de cadastro de conta bancária.
 def cadastrar_conta():  # Cria uma conta vinculada a um cliente existente.
     cpf = input("Informe o CPF do titular: ").strip()    # Solicita CPF.
     cliente = encontrar_cliente_por_cpf(cpf)              # Pesquisa cliente.
@@ -124,6 +135,7 @@ def cadastrar_conta():  # Cria uma conta vinculada a um cliente existente.
     contas.append(conta)                                  # Armazena conta.
     print(f"Conta criada com sucesso. Agência {conta['agencia']} Conta {conta['numero']}")
 
+# Função de listagem de clientes.
 def listar_clientes():  # Lista clientes cadastrados.
     if not clientes:                          # Verifica lista vazia.
         print("Nenhum cliente cadastrado.")   # Mensagem se vazio.
@@ -132,6 +144,7 @@ def listar_clientes():  # Lista clientes cadastrados.
     for c in clientes:                        # Itera sobre cada cliente.
         print(f"CPF: {c['cpf']} | Nome: {c['nome']} | Nasc.: {c['data_nascimento']} | End.: {c['endereco']}")
 
+# Função de listagem de contas.
 def listar_contas():  # Lista contas existentes.
     if not contas:                             # Se lista vazia.
         print("Nenhuma conta cadastrada.")    # Mensagem.
@@ -145,6 +158,7 @@ def listar_contas():  # Lista contas existentes.
 
 # ========================= SEÇÃO: LOOP PRINCIPAL =========================
 
+# Função principal do programa.
 def loop_principal():  # Controla fluxo interativo do programa.
     while True:                                      # Loop infinito até saída explícita.
         opcao = input(MENU).strip().lower()          # Lê opção do usuário, normaliza.
