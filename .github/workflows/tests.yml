@@ -10,9 +10,16 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      statuses: write
+      checks: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Necessário para Codecov obter histórico completo e evitar erro de commit
+          persist-credentials: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -28,20 +35,29 @@ jobs:
         run: |
           pytest --cov=desafio-1 --cov-report=xml --cov-report=term --cov-fail-under=70 -q
 
+      - name: Git debug info
+        run: |
+          echo "HEAD SHA:" $(git rev-parse HEAD)
+          echo "Remote origin URL:" $(git config --get remote.origin.url)
+          echo "Commit history (5):" && git --no-pager log --oneline -5
+          echo "Show branches:" && git branch -a
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
           files: coverage.xml
           verbose: true
           fail_ci_if_error: true
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          token: ${{ secrets.CODECOV_TOKEN }}  # Usa token explícito (recomendado para repos privados ou para evitar quebra)
+          slug: anablima/desafios-trilha-python-dio
+          flags: unittests
 
       - name: Generate coverage badge
         run: |
           python scripts/update_badge.py
 
       - name: Commit badge if changed
+        if: github.event_name == 'push'
         run: |
           if git diff --quiet || git diff --cached --quiet; then
             echo "No changes to commit"
