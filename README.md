@@ -136,19 +136,31 @@ Sugestões para validar comportamentos:
 
 ## 📊 Cobertura e Integração Contínua
 
+<<<<<<< HEAD
 Pipeline executa testes com cobertura de linhas. A execução falha se cobertura < 70% (`--cov-fail-under=70`).
 
 Rodar localmente:
+=======
+Pipeline executa testes e gera relatório de cobertura local (exibido no terminal). A execução falha se cobertura < 70% (`--cov-fail-under=70`).
+
+Para rodar localmente:
+>>>>>>> 01d349f (adiciona configuração de CI com testes automatizados e badge de cobertura)
 
 ```bash
 pytest --cov=desafio-1 --cov-report=term --cov-fail-under=70 -q
 ```
 
+<<<<<<< HEAD
 Thresholds da badge (linhas): 90/80/70/60/50.
 
 Para elevar o padrão (ex.: 80%), ajuste a flag `--cov-fail-under` no workflow.
 
 Observação: geração da badge não usa serviços externos.
+=======
+Para elevar o padrão (ex.: 80%), ajuste a flag `--cov-fail-under` no workflow.
+
+Observação: integração externa (Codecov) foi removida para simplificar e eliminar dependência de serviços/credenciais.
+>>>>>>> 01d349f (adiciona configuração de CI com testes automatizados e badge de cobertura)
 
 ## 🤝 Contribuição
 

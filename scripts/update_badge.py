@@ -1,13 +1,5 @@
 """Gera badge de cobertura (apenas linhas) a partir do arquivo `.coverage`.
-Não depende mais de coverage.xml.
-
-Thresholds (linhas):
-    >=90 brightgreen
-    >=80 green
-    >=70 yellowgreen
-    >=60 yellow
-    >=50 orange
-    <50 red
+Não depende de coverage.xml. Thresholds (linhas): >=90 brightgreen, >=80 green, >=70 yellowgreen, >=60 yellow, >=50 orange, <50 red.
 """
 from __future__ import annotations
 from pathlib import Path
@@ -16,7 +8,6 @@ import re
 BADGE_FILE = Path("coverage-badge.svg")
 COVERAGE_DATA = Path(".coverage")
 
-
 def pct_to_color(pct: float) -> str:
     if pct >= 90: return "brightgreen"
     if pct >= 80: return "green"
@@ -24,7 +15,6 @@ def pct_to_color(pct: float) -> str:
     if pct >= 60: return "yellow"
     if pct >= 50: return "orange"
     return "red"
-
 
 def parse_coverage() -> float:
     try:
@@ -41,26 +31,24 @@ def parse_coverage() -> float:
         pass
     return 0.0
 
-
 def build_svg(pct: float) -> str:
-        pct_str = f"{pct:.0f}%"
-        color = pct_to_color(pct)
-        return f"""<svg xmlns='http://www.w3.org/2000/svg' width='125' height='20'>
+    pct_str = f"{pct:.0f}%"
+    color = pct_to_color(pct)
+    return f"""<svg xmlns='http://www.w3.org/2000/svg' width='125' height='20'>
 <linearGradient id='b' x2='0' y2='100%'><stop offset='0' stop-color='#bbb' stop-opacity='.1'/><stop offset='1' stop-opacity='.1'/></linearGradient>
 <mask id='a'><rect width='125' height='20' rx='3' fill='#fff'/></mask>
 <g mask='url(#a)'>
-    <rect width='65' height='20' fill='#555'/>
-    <rect x='65' width='60' height='20' fill='#{'4c1' if color=='brightgreen' else '2ea44f' if color=='green' else 'a4a61d' if color=='yellowgreen' else 'e3b341' if color=='yellow' else 'fe7d37' if color=='orange' else 'e05d44'}'/>
-    <rect width='125' height='20' fill='url(#b)'/>
-  </g>
+  <rect width='65' height='20' fill='#555'/>
+  <rect x='65' width='60' height='20' fill='#{'4c1' if color=='brightgreen' else '2ea44f' if color=='green' else 'a4a61d' if color=='yellowgreen' else 'e3b341' if color=='yellow' else 'fe7d37' if color=='orange' else 'e05d44'}'/>
+  <rect width='125' height='20' fill='url(#b)'/>
+</g>
 <g fill='#fff' text-anchor='middle' font-family='Verdana,Geneva,DejaVu Sans,sans-serif' font-size='11'>
-    <text x='33' y='15' fill='#010101' fill-opacity='.3'>coverage</text>
-    <text x='33' y='15'>coverage</text>
-    <text x='95' y='15' fill='#010101' fill-opacity='.3'>{pct_str}</text>
-    <text x='95' y='15'>{pct_str}</text>
+  <text x='33' y='15' fill='#010101' fill-opacity='.3'>coverage</text>
+  <text x='33' y='15'>coverage</text>
+  <text x='95' y='15' fill='#010101' fill-opacity='.3'>{pct_str}</text>
+  <text x='95' y='15'>{pct_str}</text>
 </g>
 </svg>"""
-
 
 def main() -> int:
     pct = parse_coverage()
@@ -72,7 +60,6 @@ def main() -> int:
     else:
         print("Badge já estava atualizado")
     return 0
-
 
 if __name__ == '__main__':
     raise SystemExit(main())
