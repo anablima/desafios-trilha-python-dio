@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 name: ci-tests
 
 on:
@@ -12,6 +13,16 @@ on:
 
 permissions:
 	contents: write
+=======
+name: CI
+
+on:
+	push:
+		branches: [ main, develop ]
+	pull_request:
+		branches: [ main, develop ]
+		types: [opened, synchronize, reopened, closed]
+>>>>>>> 87fe096 (ci: adiciona workflow de testes com cobertura de ramos e atualiza badge)
 
 jobs:
 	tests:
@@ -22,7 +33,11 @@ jobs:
 				with:
 					fetch-depth: 0
 
+<<<<<<< HEAD
 			- name: Setup Python
+=======
+			- name: Set up Python
+>>>>>>> 87fe096 (ci: adiciona workflow de testes com cobertura de ramos e atualiza badge)
 				uses: actions/setup-python@v5
 				with:
 					python-version: '3.11'
@@ -32,6 +47,7 @@ jobs:
 					python -m pip install --upgrade pip
 					pip install -r requirements.txt
 
+<<<<<<< HEAD
 			- name: Run tests (line coverage)
 				run: |
 					pytest --cov=desafio-1 --cov-report=term --cov-fail-under=70 -q
@@ -45,10 +61,33 @@ jobs:
 				run: |
 					if git diff --quiet coverage-badge.svg; then
 						echo "No badge changes"
+=======
+			- name: Run tests with branch coverage
+				run: |
+					pytest --cov=desafio-1 --cov-branch --cov-report=xml --cov-report=term --cov-fail-under=70 -q
+
+			- name: Gerar badge de cobertura (branch se disponível)
+				run: |
+					python scripts/update_badge.py
+
+			- name: Commit badge atualizado (apenas em push)
+				if: github.event_name == 'push'
+				run: |
+					if git diff --quiet coverage-badge.svg; then
+						echo "Badge sem alterações"
+>>>>>>> 87fe096 (ci: adiciona workflow de testes com cobertura de ramos e atualiza badge)
 					else
 						git config user.name "github-actions"
 						git config user.email "actions@github.com"
 						git add coverage-badge.svg
+<<<<<<< HEAD
 						git commit -m "ci: update coverage badge"
 						git push
 					fi
+=======
+						git commit -m "ci: atualiza badge cobertura"
+						git push
+					fi
+				env:
+					GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+>>>>>>> 87fe096 (ci: adiciona workflow de testes com cobertura de ramos e atualiza badge)
