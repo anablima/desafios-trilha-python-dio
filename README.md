@@ -1,5 +1,7 @@
 # Desafios Trilha Python DIO
 
+![CI](https://github.com/anablima/desafios-trilha-python-dio/actions/workflows/tests.yml/badge.svg) ![Coverage](coverage-badge.svg)
+
 ## Desafio 1 – Sistema Bancário Simples (Depósito, Saque e Extrato)
 
 Este repositório contém a implementação de um pequeno sistema bancário em Python proposto na trilha da **Digital Innovation One (DIO)**. O objetivo é praticar lógica de programação, uso de funções, validação de entrada e controle de estado em memória.
@@ -134,21 +136,17 @@ Sugestões para validar comportamentos:
 
 ## 📊 Cobertura e Integração Contínua
 
-O pipeline de CI executa os testes automatizados e coleta cobertura de código. A execução falha deliberadamente se a cobertura cair abaixo de 70% (`--cov-fail-under=70`).
+Pipeline executa testes e gera relatório de cobertura local (exibido no terminal). A execução falha se cobertura < 70% (`--cov-fail-under=70`).
 
-Badges no topo refletem:
-
-- Status da última execução de CI
-- Cobertura local gerada pelo `coverage.xml` via script `scripts/update_badge.py`
-- Cobertura reportada externamente (Codecov)
-
-Para rodar localmente com a mesma regra de falha:
+Para rodar localmente:
 
 ```bash
 pytest --cov=desafio-1 --cov-report=term --cov-fail-under=70 -q
 ```
 
-Se desejar elevar o padrão (ex.: 80% ou 90%), basta ajustar a flag `--cov-fail-under` no workflow em `.github/workflows/tests.yml`.
+Para elevar o padrão (ex.: 80%), ajuste a flag `--cov-fail-under` no workflow.
+
+Observação: integração externa (Codecov) foi removida para simplificar e eliminar dependência de serviços/credenciais.
 
 ## 🤝 Contribuição
 
