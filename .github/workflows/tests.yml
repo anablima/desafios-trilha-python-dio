@@ -18,11 +18,24 @@ name: CI
 
 on:
 	push:
-		branches: [ main, develop ]
+		branches:
+			- main
+			- develop
 	pull_request:
+<<<<<<< HEAD
 		branches: [ main, develop ]
 		types: [opened, synchronize, reopened, closed]
 >>>>>>> 87fe096 (ci: adiciona workflow de testes com cobertura de ramos e atualiza badge)
+=======
+		branches:
+			- main
+			- develop
+		types:
+			- opened
+			- synchronize
+			- reopened
+			- closed
+>>>>>>> 295be32 (ci: formata a lista de branches e tipos no workflow de testes)
 
 jobs:
 	tests:
