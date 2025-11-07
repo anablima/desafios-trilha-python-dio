@@ -1,5 +1,7 @@
 # Desafios Trilha Python DIO
 
+![CI](https://github.com/anablima/desafios-trilha-python-dio/actions/workflows/tests.yml/badge.svg) ![Coverage](coverage-badge.svg)
+
 ## Desafio 1 – Sistema Bancário Simples (Depósito, Saque e Extrato)
 
 Este repositório contém a implementação de um pequeno sistema bancário em Python proposto na trilha da **Digital Innovation One (DIO)**. O objetivo é praticar lógica de programação, uso de funções, validação de entrada e controle de estado em memória.
@@ -43,16 +45,16 @@ Funções:
 
 ```python
 def depositar_valor(saldo, extrato):
-	# Lê valor, valida e atualiza saldo + extrato
-	return saldo, extrato
+    # Lê valor, valida e atualiza saldo + extrato
+    return saldo, extrato
 
 def sacar_valor(saldo, limite, numero_saques, LIMITE_SAQUES, extrato):
-	# Aplica todas as regras de saque e atualiza estado
-	return saldo, extrato, numero_saques
+    # Aplica todas as regras de saque e atualiza estado
+    return saldo, extrato, numero_saques
 
 def exibir_extrato(saldo, extrato):
-	# Mostra todas as transações ou mensagem padrão
-	return extrato
+    # Mostra todas as transações ou mensagem padrão
+    return extrato
 ```
 
 Cada função retorna os valores atualizados, que são reatribuídos no loop principal.
