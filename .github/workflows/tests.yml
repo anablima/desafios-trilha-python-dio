@@ -57,6 +57,7 @@ jobs:
           python scripts/update_badge.py
 
       - name: Commit badge if changed
+        if: github.event_name == 'push'
         run: |
           if git diff --quiet || git diff --cached --quiet; then
             echo "No changes to commit"
