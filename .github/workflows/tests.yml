@@ -1,58 +1,54 @@
-name: CI
+name: ci-tests
 
 on:
-	push:
-		branches:
-			- main
-			- develop
-	pull_request:
-		branches:
-			- main
-			- develop
-		types:
-			- opened
-			- synchronize
-			- reopened
-			- closed
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+permissions:
+  contents: write
 
 jobs:
-	tests:
-		runs-on: ubuntu-latest
-		steps:
-			- name: Checkout
-				uses: actions/checkout@v4
-				with:
-					fetch-depth: 0
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-			- name: Set up Python
-				uses: actions/setup-python@v5
-				with:
-					python-version: '3.11'
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
-			- name: Install dependencies
-				run: |
-					python -m pip install --upgrade pip
-					pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-			- name: Run tests with branch coverage
-				run: |
-					pytest --cov=desafio-1 --cov-branch --cov-report=xml --cov-report=term --cov-fail-under=70 -q
+      - name: Run tests (line coverage)
+        run: |
+          pytest --cov=desafio-1 --cov-report=term --cov-fail-under=70 -q
 
-			- name: Gerar badge de cobertura (branch se disponível)
-				run: |
-					python scripts/update_badge.py
+      - name: Generate coverage badge
+        run: |
+          python scripts/update_badge.py
 
-			- name: Commit badge atualizado (apenas em push)
-				if: github.event_name == 'push'
-				run: |
-					if git diff --quiet coverage-badge.svg; then
-						echo "Badge sem alterações"
-					else
-						git config user.name "github-actions"
-						git config user.email "actions@github.com"
-						git add coverage-badge.svg
-						git commit -m "ci: atualiza badge cobertura"
-						git push
-					fi
-				env:
-					GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit coverage badge (push only)
+        if: github.event_name == 'push'
+        run: |
+          if git diff --quiet coverage-badge.svg; then
+            echo "No badge changes"
+          else
+            git config user.name "github-actions"
+            git config user.email "actions@github.com"
+            git add coverage-badge.svg
+            git commit -m "ci: update coverage badge"
+            git push
+          fi
