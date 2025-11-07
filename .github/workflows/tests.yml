@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Necessário para Codecov obter histórico completo e evitar erro de commit
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -34,8 +36,7 @@ jobs:
           files: coverage.xml
           verbose: true
           fail_ci_if_error: true
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          token: ${{ secrets.CODECOV_TOKEN }}  # Usa token explícito (recomendado para repos privados ou para evitar quebra)
 
       - name: Generate coverage badge
         run: |
