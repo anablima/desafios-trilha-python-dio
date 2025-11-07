@@ -1,7 +1,5 @@
 # Desafios Trilha Python DIO
 
-![CI](https://github.com/anablima/desafios-trilha-python-dio/actions/workflows/tests.yml/badge.svg) ![Coverage](coverage-badge.svg) ![Codecov](https://codecov.io/gh/anablima/desafios-trilha-python-dio/branch/develop/graph/badge.svg)
-
 ## Desafio 1 – Sistema Bancário Simples (Depósito, Saque e Extrato)
 
 Este repositório contém a implementação de um pequeno sistema bancário em Python proposto na trilha da **Digital Innovation One (DIO)**. O objetivo é praticar lógica de programação, uso de funções, validação de entrada e controle de estado em memória.
