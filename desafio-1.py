@@ -110,20 +110,21 @@ def exibir_extrato(saldo, extrato):
 
     return extrato
 
-while True:
-    opcao = input(menu)
-    
-    if opcao == "d":
-        saldo, extrato = depositar_valor(saldo, extrato)
+if __name__ == "__main__":
+    while True:
+        opcao = input(menu)
         
-    elif opcao == "s":
-        saldo, extrato, numero_saques = sacar_valor(saldo, limite, numero_saques, LIMITE_SAQUES, extrato)
-    
-    elif opcao == "e":
-        extrato = exibir_extrato(saldo, extrato)
+        if opcao == "d":
+            saldo, extrato = depositar_valor(saldo, extrato)
+            
+        elif opcao == "s":
+            saldo, extrato, numero_saques = sacar_valor(saldo, limite, numero_saques, LIMITE_SAQUES, extrato)
+        
+        elif opcao == "e":
+            extrato = exibir_extrato(saldo, extrato)
 
-    elif opcao == "q":
-        break
+        elif opcao == "q":
+            break
 
-    else:
-        print("Operação inválida, por favor selecione novamente a operação desejada.")
+        else:
+            print("Operação inválida, por favor selecione novamente a operação desejada.")
