@@ -149,6 +149,7 @@ Thresholds da badge (linhas): 90/80/70/60/50.
 Para elevar o padrão (ex.: 80%), ajuste a flag `--cov-fail-under` no workflow.
 
 Observação: geração da badge não usa serviços externos.
+\n+Nota: O arquivo `coverage.xml` foi removido; a badge é gerada diretamente a partir de `.coverage`.
 
 ## 🤝 Contribuição
 
