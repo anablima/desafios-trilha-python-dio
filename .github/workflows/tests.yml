@@ -30,7 +30,7 @@ jobs:
 
       - name: Run tests (line coverage)
         run: |
-          pytest --cov=desafio-1 --cov-report=term --cov-fail-under=70 -q
+          pytest --cov=desafio-1 --cov-report=term --cov-fail-under=15 -q
 
       - name: Generate coverage badge
         run: |

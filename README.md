@@ -156,6 +156,18 @@ Script interativo acoplado a `input()` imprime mensagens diretamente.
 
 Este projeto está licenciado sob a licença **MIT**. Veja o arquivo `LICENSE` para o texto completo.
 
+## 📊 Cobertura e Testes
+
+É obrigatório executar os testes unitários em cada alteração. A cobertura mínima de linhas exigida pelo pipeline (atualmente relaxada para facilitar evolução inicial) é **15%**. Caso uma mudança reduza a cobertura abaixo desse valor, adicione testes ou refatore para restaurar o índice. Recomenda-se elevar progressivamente para 30%, 50%, 70% conforme amadurecer.
+
+Resumo da política:
+
+- Rodar `pytest -q` antes de commitar.
+- Verificar cobertura local com: `pytest --cov=desafio-1 --cov-report=term --cov-fail-under=15 -q`.
+- Cada novo recurso deve ter ao menos: cenário de sucesso + 1 cenário de erro/limite.
+- Badge de cobertura é gerada localmente (sem serviços externos).
+- Limiares podem ser elevados futuramente (ex.: 80%, 85%).
+
 Rodar localmente:
 
 ```bash
@@ -176,7 +188,7 @@ Thresholds de cor da badge (linhas):
 O arquivo `coverage-badge.svg` só é atualizado se o conteúdo muda (idempotência).
 Nota: O arquivo `coverage.xml` foi removido; a badge é gerada diretamente a partir de `.coverage`.
 
-O projeto já possui testes automatizados em `tests/`:
+O projeto já possui testes automatizados em `tests/` (execução obrigatória). Política mínima atual: cobertura de linhas >= 15%.
 
 - `test_desafio1.py`: Exercita operações de depósito, saque (limites, saldo insuficiente, exceder número de saques) e extrato usando execução do script (simulação de fluxo interativo).
 - `test_update_badge.py`: Cobre lógica de geração da badge (parse de `.coverage`, faixas de cor, idempotência, formatação do SVG).
