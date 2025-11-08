@@ -22,7 +22,7 @@ def test_update_readme_basic(tmp_path, monkeypatch):
     # Usa diretório temporário para isolar
     monkeypatch.chdir(tmp_path)
     # Criar README com placeholder
-    write_readme('Cobertura atual: <!--COVERAGE_PCT-->0%<!--/COVERAGE_PCT-->\n')
+    write_readme('![Coverage](coverage-badge.svg) Cobertura atual: <!--COVERAGE_PCT-->0%<!--/COVERAGE_PCT-->\n')
     # Força valor de cobertura
     monkeypatch.setattr(mod, 'read_pct_from_api', lambda: 82.94)
     monkeypatch.setattr(mod, 'read_pct_from_badge', lambda: None)
@@ -30,6 +30,7 @@ def test_update_readme_basic(tmp_path, monkeypatch):
     assert result is True
     updated = README_TMP.read_text(encoding='utf-8')
     assert '82.9%' in updated  # arredondado uma casa
+    assert '?v=82.9)' in updated
 
 
 def test_update_readme_no_placeholder(tmp_path, monkeypatch):
@@ -43,7 +44,7 @@ def test_update_readme_no_placeholder(tmp_path, monkeypatch):
 
 def test_update_readme_idempotent(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    write_readme('Cobertura atual: <!--COVERAGE_PCT-->75.0%<!--/COVERAGE_PCT-->\n')
+    write_readme('![Coverage](coverage-badge.svg?v=75.0) Cobertura atual: <!--COVERAGE_PCT-->75.0%<!--/COVERAGE_PCT-->\n')
     monkeypatch.setattr(mod, 'read_pct_from_api', lambda: 75.0)
     r = mod.update_readme()
     assert r is False  # nada muda
@@ -53,10 +54,12 @@ def test_update_readme_idempotent(tmp_path, monkeypatch):
 
 def test_update_readme_fallback_badge(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    write_readme('Cobertura atual: <!--COVERAGE_PCT-->0%<!--/COVERAGE_PCT-->\n')
+    write_readme('![Coverage](coverage-badge.svg) Cobertura atual: <!--COVERAGE_PCT-->0%<!--/COVERAGE_PCT-->\n')
     # Simula falha na API e badge com número
     monkeypatch.setattr(mod, 'read_pct_from_api', lambda: None)
     monkeypatch.setattr(mod, 'read_pct_from_badge', lambda: 61.0)
     r = mod.update_readme()
     assert r is True
-    assert '61.0%' in README_TMP.read_text(encoding='utf-8')
+    txt = README_TMP.read_text(encoding='utf-8')
+    assert '61.0%' in txt
+    assert '?v=61.0)' in txt
