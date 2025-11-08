@@ -1,13 +1,18 @@
 import builtins
 from pathlib import Path
 import re
-import importlib
-import types
+import importlib.machinery
+import importlib.util
 
 import pytest
 
-# Importa o módulo de badge
-badge_module = importlib.import_module('scripts.update_badge')
+from pathlib import Path as _P
+_badge_path = _P(__file__).resolve().parent.parent / 'scripts' / 'update_badge.py'
+_loader = importlib.machinery.SourceFileLoader('scripts.update_badge', str(_badge_path))
+_spec = importlib.util.spec_from_loader(_loader.name, _loader)
+assert _spec is not None, 'Spec do update_badge não pode ser None'
+badge_module = importlib.util.module_from_spec(_spec)
+_loader.exec_module(badge_module)
 
 
 def write_coverage(tmp_path: Path, executed: int, missing: int):
