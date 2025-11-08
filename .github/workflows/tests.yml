@@ -21,7 +21,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.13'
 
       - name: Install dependencies
         run: |
@@ -30,7 +30,7 @@ jobs:
 
       - name: Run tests (line coverage)
         run: |
-          pytest --cov=desafio-1 --cov-report=term --cov-fail-under=15 -q
+          pytest --cov=desafio-1 --cov-report=term --cov-fail-under=60 -q
 
       - name: Generate coverage badge
         run: |

@@ -1,6 +1,6 @@
 # Desafios Trilha Python DIO
 
-![CI](https://github.com/anablima/desafios-trilha-python-dio/actions/workflows/tests.yml/badge.svg) ![Coverage](coverage-badge.svg) 
+![CI](https://github.com/anablima/desafios-trilha-python-dio/actions/workflows/tests.yml/badge.svg) ![Coverage](coverage-badge.svg?v=85.9) Cobertura: <!--COVERAGE_PCT-->85.9%<!--/COVERAGE_PCT--> 
 
 ## Desafio 1 – Sistema Bancário Simples (Depósito, Saque e Extrato)
 

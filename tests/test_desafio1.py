@@ -136,3 +136,80 @@ def test_saque_valor_invalido(monkeypatch, capsys):
     assert 'valor informado é inválido' in saida
     assert 'Saldo: R$ 100.00' in saida
     assert 'Saque:' not in saida
+
+def test_criar_conta_corrente_sucesso(monkeypatch, capsys):
+    # Prepara cliente existente e garante lista de contas limpa
+    cliente = {"nome": "Maria", "cpf": "12345678900", "data_nascimento": "01/01/1990", "endereco": "Rua A, 10 - Centro - Cidade/UF"}
+    clientes = [cliente]
+    setattr(desafio_mod, 'contas', [])  # reset estado global de contas
+    monkeypatch.setattr(builtins, 'input', sequencia_inputs([cliente['cpf']]))
+    desafio_mod.criar_conta_corrente(clientes)
+    saida = capsys.readouterr().out
+    assert 'Conta número:' in saida
+    assert cliente['nome'] in saida
+    assert len(desafio_mod.contas) == 1
+    conta = desafio_mod.contas[0]
+    assert conta['cliente'] is cliente  # referência ao mesmo dict
+    assert conta['numero'] == f"{desafio_mod.NUM_AGENCIA}-1"
+
+def test_criar_conta_corrente_cliente_inexistente(monkeypatch, capsys):
+    clientes = []
+    setattr(desafio_mod, 'contas', [])
+    monkeypatch.setattr(builtins, 'input', sequencia_inputs(['00011122233']))
+    desafio_mod.criar_conta_corrente(clientes)
+    saida = capsys.readouterr().out
+    assert 'Cliente não encontrado' in saida
+    assert len(desafio_mod.contas) == 0
+
+def test_criar_conta_corrente_incrementa_numero(monkeypatch, capsys):
+    cliente = {"nome": "João", "cpf": "99988877766", "data_nascimento": "02/02/1992", "endereco": "Rua B, 20 - Bairro - Cidade/UF"}
+    clientes = [cliente]
+    setattr(desafio_mod, 'contas', [])
+    # Cria primeira conta
+    monkeypatch.setattr(builtins, 'input', sequencia_inputs([cliente['cpf']]))
+    desafio_mod.criar_conta_corrente(clientes)
+    # Cria segunda conta para o mesmo cliente
+    monkeypatch.setattr(builtins, 'input', sequencia_inputs([cliente['cpf']]))
+    desafio_mod.criar_conta_corrente(clientes)
+    saida = capsys.readouterr().out
+    assert len(desafio_mod.contas) == 2
+    nums = [c['numero'] for c in desafio_mod.contas]
+    assert f"{desafio_mod.NUM_AGENCIA}-1" in nums
+    assert f"{desafio_mod.NUM_AGENCIA}-2" in nums
+
+def test_criar_varias_contas_sequencia(monkeypatch, capsys):
+    """Cria 10 contas para o mesmo cliente e valida sequência numérica contínua."""
+    cliente = {"nome": "Seq", "cpf": "10101010100", "data_nascimento": "03/03/1993", "endereco": "Rua S, 30 - Centro - Cidade/UF"}
+    clientes = [cliente]
+    setattr(desafio_mod, 'contas', [])
+    for i in range(10):
+        monkeypatch.setattr(builtins, 'input', sequencia_inputs([cliente['cpf']]))
+        desafio_mod.criar_conta_corrente(clientes)
+    saida = capsys.readouterr().out
+    assert len(desafio_mod.contas) == 10
+    numeros = {c['numero'] for c in desafio_mod.contas}
+    esperado = {f"{desafio_mod.NUM_AGENCIA}-{i}" for i in range(1, 11)}
+    assert numeros == esperado
+    # Última linha de saída deve conter criação da conta 10
+    assert f"{desafio_mod.NUM_AGENCIA}-10" in saida
+
+def test_criar_contas_multiplos_clientes(monkeypatch, capsys):
+    """Intercala criação de contas de dois clientes distintos garantindo sequência única global."""
+    cliente_a = {"nome": "Ana", "cpf": "22233344455", "data_nascimento": "04/04/1994", "endereco": "Rua A, 40 - Centro - Cidade/UF"}
+    cliente_b = {"nome": "Bruno", "cpf": "33344455566", "data_nascimento": "05/05/1995", "endereco": "Rua B, 50 - Centro - Cidade/UF"}
+    clientes = [cliente_a, cliente_b]
+    setattr(desafio_mod, 'contas', [])
+    # Cria contas alternando CPF
+    ordem_cpfs = [cliente_a['cpf'], cliente_b['cpf'], cliente_a['cpf'], cliente_b['cpf']]
+    for cpf in ordem_cpfs:
+        monkeypatch.setattr(builtins, 'input', sequencia_inputs([cpf]))
+        desafio_mod.criar_conta_corrente(clientes)
+    saida = capsys.readouterr().out
+    assert len(desafio_mod.contas) == 4
+    numeros = [c['numero'] for c in desafio_mod.contas]
+    assert numeros == [f"{desafio_mod.NUM_AGENCIA}-1", f"{desafio_mod.NUM_AGENCIA}-2", f"{desafio_mod.NUM_AGENCIA}-3", f"{desafio_mod.NUM_AGENCIA}-4"]
+    # Verifica associação correta dos clientes
+    assert desafio_mod.contas[0]['cliente'] is cliente_a
+    assert desafio_mod.contas[1]['cliente'] is cliente_b
+    assert desafio_mod.contas[2]['cliente'] is cliente_a
+    assert desafio_mod.contas[3]['cliente'] is cliente_b

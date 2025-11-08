@@ -58,36 +58,46 @@ def update_readme() -> bool:
     content = README.read_text(encoding='utf-8')
     pct = determine_pct()
     pct_display = f"{pct:.1f}%"
+
     match = PLACEHOLDER_RE.search(content)
     if not match:
-        print('Placeholder de cobertura não encontrado; nenhuma alteração.')
+        # Insere placeholder automaticamente após primeira ocorrência da imagem da badge de coverage, se existir.
+        if BADGE_IMG_RE.search(content):
+            def _insert_placeholder(m: re.Match) -> str:
+                return f"{m.group(0)} Cobertura: <!--COVERAGE_PCT-->{pct_display}<!--/COVERAGE_PCT-->"
+            content_with_placeholder = BADGE_IMG_RE.sub(_insert_placeholder, content, count=1)
+            content = content_with_placeholder
+            print('Placeholder de cobertura inserido automaticamente.')
+        else:
+            print('Badge de coverage não encontrada; placeholder não inserido.')
+            return False
+        # Reexecuta regex após inserção
+        match = PLACEHOLDER_RE.search(content)
+
+    if match is None:  # salvaguarda estática (já tratado, mas satisfaz analisador)
+        print('Falha ao localizar placeholder após tentativa de inserção.')
         return False
     atual = match.group(2).strip()
     if atual == pct_display:
-        # Mesmo percentual; ainda assim garantir que badge tenha cache-bust correto
-        new_content = content
+        new_content = content  # Mesmo valor, apenas garantimos cache-bust
     else:
         new_content = PLACEHOLDER_RE.sub(rf"\g<1>{pct_display}\g<3>", content, count=1)
 
-    # Atualiza link da imagem adicionando query param cache-bust ?v=82.9 (sempre)
-    # Atualiza imagem da badge se presente
+    # Atualiza link da imagem adicionando query param cache-bust ?v=<pct>
     def _badge_sub(m: re.Match) -> str:
         base = m.group(1)
-        pct_query = pct_display.rstrip('%')  # remove símbolo para query param
+        pct_query = pct_display.rstrip('%')
         return f"{base}?v={pct_query})"
 
     if BADGE_IMG_RE.search(new_content):
         new_content = BADGE_IMG_RE.sub(_badge_sub, new_content, count=1)
-    else:
-        # Se não houver imagem, opcionalmente podemos inserir após CI badge
-        pass
 
-    changed = new_content != content
+    changed = new_content != README.read_text(encoding='utf-8')
     if changed:
         README.write_text(new_content, encoding='utf-8')
-        print(f'Atualizado README cobertura para {pct_display}')
+        print(f'Readme atualizado / sincronizado com cobertura {pct_display}')
     else:
-        print('Valor de cobertura inalterado no README (incluindo badge).')
+        print('Nenhuma alteração necessária no README.')
     return changed
 
 

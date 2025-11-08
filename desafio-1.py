@@ -1,3 +1,6 @@
+from test.test_reprlib import r
+
+
 menu = """
 
 [d] Depositar
@@ -11,6 +14,7 @@ saldo = 0
 limite = 500
 extrato = ""
 numero_saques = 0
+contas = []
 
 # Constantes
 LIMITE_SAQUES = 3
@@ -62,6 +66,37 @@ def cadastrar_cliente(clientes):
 
     clientes.append(cliente)
     print("Cliente cadastrado com sucesso!")
+
+# Função criar conta
+def criar_conta_corrente(clientes):
+    # Solicita o CPF do cliente
+    cpf = input("Informe o CPF do cliente: ")
+    
+    # Verifica se o cliente existe
+    cliente = next((c for c in clientes if c["cpf"] == cpf), None)
+
+    if not cliente:
+        print("Cliente não encontrado, cadastre o cliente antes de prosseguir!")
+        return 
+
+    # Cria a conta corrente
+    conta = {
+        "numero": f"{NUM_AGENCIA}-{len(contas) + 1}",
+        "cliente": cliente,
+        "saldo": 0,
+        "limite": 500,
+        "extrato": "",
+        "numero_saques": 0
+    }
+
+    contas.append(conta)
+    print(f"Conta número: {conta['numero']} criada para o cliente {cliente['nome']}.")
+    
+    # Adiciona a conta à lista de contas do cliente
+    if "contas" not in cliente:
+        cliente["contas"] = []
+    cliente["contas"].append(conta)
+    return conta
 
 # Operação de depósito
 def depositar_valor(saldo, extrato):
