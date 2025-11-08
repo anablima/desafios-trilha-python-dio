@@ -30,50 +30,46 @@ contas = []
 ############ Administração de clientes e contas bancárias ################
 ##########################################################################
 
-# Função para cadastrar cliente
+# Cadastro de cliente.
+# Parametros: clientes (list[dict]) lista mutável onde o novo cliente será inserido.
+# Regras: valida unicidade de CPF; valida formato de endereço (logradouro, número - bairro - cidade/UF).
+# Retorno: None (efeitos colaterais: adiciona dict do cliente ou imprime mensagem de erro).
 def cadastrar_cliente(clientes):
     cpf = input("Informe o CPF do cliente: ")
-    
-    # Verifica se o CPF já está cadastrado
-    valida_cpf = [cliente for cliente in clientes if cliente["cpf"] == cpf]
-    
-    # Verifica se o CPF já está cadastrado, remove pontuação e mantém apenas dígitos
-    valida_cpf_string = ''.join(filter(str.isdigit, valida_cpf[0]["cpf"])) if valida_cpf else None
 
-    if valida_cpf_string:
+    # Validação de CPF simples: apenas dígitos e 11 caracteres
+    cpf_digits = ''.join(filter(str.isdigit, cpf))
+    if len(cpf_digits) != 11:
+        print("CPF inválido!")
+        return clientes
+    
+    # Verifica se o CPF já existe
+    existente = any(
+        ''.join(filter(str.isdigit, c['cpf'])) == cpf_digits
+        for c in clientes
+    )
+    
+    if existente:
         print("Já existe cliente cadastrado com esse CPF.")
         return
-    
+
     nome = input("Informe o nome do cliente: ")
     dt_nascimento = input("Informe a data de nascimento do cliente (DD/MM/AAAA): ")
     endereco = input("Informe o endereço do cliente (logradouro, número - bairro - cidade/sigla estado): ")
 
-    # Validar formato do endereço: logradouro, número - bairro - cidade/sigla estado
-    partes_endereco = endereco.split(' - ')
-    if len(partes_endereco) != 3:
-        print("Formato de endereço inválido. Use: logradouro, número - bairro - cidade/sigla estado")
-        return
-    
-    logradouro_numero = partes_endereco[0]
-    bairro = partes_endereco[1]
-    cidade_estado = partes_endereco[2]
-    
-    # Valida se logradouro contém vírgula (separa logradouro do número)
-    if ',' not in logradouro_numero:
-        print("Formato de endereço inválido. O logradouro e número devem ser separados por vírgula.")
-        return
-    
-    # Valida se cidade/estado contém barra
-    if '/' not in cidade_estado:
-        print("Formato de endereço inválido. Cidade e estado devem ser separados por barra (/).")
-        return
-    
-    cliente = {"nome": nome, "cpf": cpf, "data_nascimento": dt_nascimento, "endereco": endereco}
+    # Validação agora é opcional: sempre cadastra e, se formato duvidoso, emite aviso sem bloquear
+    ok, aviso = validar_endereco(endereco)
+    if not ok:
+        print(f"Aviso: endereço potencialmente inválido ({aviso}). Cadastro prossegue.")
 
+    cliente = {"nome": nome, "cpf": cpf, "data_nascimento": dt_nascimento, "endereco": endereco}
     clientes.append(cliente)
     print("Cliente cadastrado com sucesso!")
 
-# Função criar conta
+# Criação de conta corrente.
+# Parametros: clientes (list[dict]) para localizar cliente existente pelo CPF digitado.
+# Regras: exige cliente pré-cadastrado; gera número sequencial global usando tamanho da lista "contas".
+# Retorno: dict da conta criada ou None se cliente não encontrado. Efeitos: muta listas globais e cliente['contas'].
 def criar_conta_corrente(clientes):
     # Solicita o CPF do cliente
     cpf = input("Informe o CPF do cliente: ")
@@ -104,7 +100,9 @@ def criar_conta_corrente(clientes):
     cliente["contas"].append(conta)
     return conta
 
-# Função listar contas
+# Listagem de contas.
+# Parametros: contas (list[dict]) cada item contém 'numero' e 'cliente'.
+# Regras: apenas imprime; não retorna estrutura; não modifica estado.
 def listar_contas(contas):
     for conta in contas:
         cliente = conta["cliente"]
@@ -115,7 +113,10 @@ def listar_contas(contas):
 ####### Operações de depósito, saque e exibição de extrato bancário ######
 ##########################################################################
 
-# Operação de depósito
+# Operação de depósito com I/O.
+# Parametros: saldo (float) saldo atual; extrato (str) linhas acumuladas.
+# Lê valor via input(); usa aplicar_deposito para lógica pura; em caso de erro, mantém saldo/extrato.
+# Retorno: (novo_saldo, novo_extrato).
 def depositar_valor(saldo, extrato):
     valor = float(input("Informe o valor do depósito: "))
     
@@ -128,7 +129,10 @@ def depositar_valor(saldo, extrato):
         print("Operação falhou! O valor informado é inválido.")
     return saldo, extrato
 
-# Operação de saque
+# Operação de saque com I/O.
+# Parametros: saldo (float), limite (float), numero_saques (int), LIMITE_SAQUES (int), extrato (str).
+# Lê valor via input(); delega a aplicar_saque; mantém ordem de validação: saldo->limite->nº saques->valor>0.
+# Retorno: (novo_saldo, novo_extrato, numero_saques_atualizado).
 def sacar_valor(saldo, limite, numero_saques, LIMITE_SAQUES, extrato):
     valor = float(input("Informe o valor do saque: "))
     
@@ -148,7 +152,10 @@ def sacar_valor(saldo, limite, numero_saques, LIMITE_SAQUES, extrato):
             print("Operação falhou! O valor informado é inválido.")
     return saldo, extrato, numero_saques
 
-# Operação de exibição de extrato
+# Exibição de extrato.
+# Parametros: saldo (float), extrato (str) acumulado.
+# Regras: imprime cabeçalho, movimentações ou mensagem padrão e saldo final.
+# Retorno: extrato (inalterado).
 def exibir_extrato(saldo, extrato):
     
     print("\n================ EXTRATO ================")
@@ -162,6 +169,10 @@ def exibir_extrato(saldo, extrato):
 ######################## Funções Financeiras Brutas ######################
 ##########################################################################
 
+## Função pura de depósito.
+# Parametros: saldo (float) >=0; valor (float) >0.
+# Regras: rejeita valor <=0 (ValueError 'valor inválido'). Não formata saldo antigo.
+# Retorno: (novo_saldo, linha_extrato).
 def aplicar_deposito(saldo: float, valor: float):
     """Retorna novo saldo e linha de extrato para um depósito válido.
     Levanta ValueError em caso de valor inválido (<=0).
@@ -170,6 +181,11 @@ def aplicar_deposito(saldo: float, valor: float):
         raise ValueError("valor inválido")
     return saldo + valor, f"Depósito: R$ {valor:.2f}\n"
 
+## Função pura de saque.
+# Parametros: saldo (float), limite (float), numero_saques (int), LIMITE_SAQUES (int), valor (float).
+# Regras: valida em ordem: excedeu saldo, excedeu limite, excedeu nº saques, valor>0; lança ValueError
+# com mensagens específicas. Em sucesso decrementa saldo e incrementa contador.
+# Retorno: (novo_saldo, linha_extrato, numero_saques+1).
 def aplicar_saque(saldo: float, limite: float, numero_saques: int, LIMITE_SAQUES: int, valor: float):
     """Processa saque de forma bruta, retornando novo saldo, linha de extrato e contador atualizado.
     Ordem de validação preservada: saldo -> limite -> número de saques -> valor > 0.
@@ -188,6 +204,29 @@ def aplicar_saque(saldo: float, limite: float, numero_saques: int, LIMITE_SAQUES
     if valor <= 0:
         raise ValueError("valor inválido")
     return saldo - valor, f"Saque: R$ {valor:.2f}\n", numero_saques + 1
+
+##########################################################################
+########################## Validação de Endereço #########################
+##########################################################################
+
+def validar_endereco(endereco: str):
+    """Valida formato esperado 'logradouro, número - bairro - cidade/UF'.
+    Retorna (ok: bool, detalhe: str). Não lança exceções. Aceita qualquer string e apenas sinaliza problemas.
+    Critérios:
+    - Deve conter exatamente 3 segmentos separados por ' - '
+    - Primeiro segmento deve ter vírgula separando logradouro e número
+    - Último segmento deve conter '/'
+    Se qualquer critério falhar, ok=False e detalhe descreve primeira falha.
+    """
+    partes = endereco.split(' - ')
+    if len(partes) != 3:
+        return False, 'segmentação incorreta'
+    logradouro_numero, _bairro, cidade_estado = partes
+    if ',' not in logradouro_numero:
+        return False, 'logradouro sem vírgula'
+    if '/' not in cidade_estado:
+        return False, 'cidade/UF sem barra'
+    return True, 'válido'
 
 #########################################################################
 ############################ MENU PRINCIPAL #############################

@@ -106,8 +106,10 @@ def test_cadastrar_cliente_endereco_invalido(monkeypatch, capsys):
     monkeypatch.setattr(builtins, 'input', sequencia_inputs(entradas))
     desafio_mod.cadastrar_cliente(clientes)
     saida = capsys.readouterr().out
-    assert 'Formato de endereço inválido' in saida
-    assert len(clientes) == 0
+    # Agora deve emitir aviso e ainda cadastrar
+    assert 'Aviso: endereço potencialmente inválido' in saida
+    assert 'cadastrado com sucesso' in saida
+    assert len(clientes) == 1
 
 def test_cadastrar_cliente_logradouro_sem_virgula(monkeypatch, capsys):
     clientes = []
@@ -115,8 +117,8 @@ def test_cadastrar_cliente_logradouro_sem_virgula(monkeypatch, capsys):
     monkeypatch.setattr(builtins, 'input', sequencia_inputs(entradas))
     desafio_mod.cadastrar_cliente(clientes)
     saida = capsys.readouterr().out
-    assert 'logradouro e número devem ser separados por vírgula' in saida
-    assert len(clientes) == 0
+    assert 'Aviso: endereço potencialmente inválido' in saida
+    assert len(clientes) == 1
 
 def test_cadastrar_cliente_cidade_sem_barra(monkeypatch, capsys):
     clientes = []
@@ -124,8 +126,8 @@ def test_cadastrar_cliente_cidade_sem_barra(monkeypatch, capsys):
     monkeypatch.setattr(builtins, 'input', sequencia_inputs(entradas))
     desafio_mod.cadastrar_cliente(clientes)
     saida = capsys.readouterr().out
-    assert 'Cidade e estado devem ser separados por barra' in saida
-    assert len(clientes) == 0
+    assert 'Aviso: endereço potencialmente inválido' in saida
+    assert len(clientes) == 1
 
 def test_saque_valor_invalido(monkeypatch, capsys):
     saldo, extrato, numero_saques = 100, '', 0
