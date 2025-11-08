@@ -17,7 +17,6 @@ saldo = 0
 limite = 500
 extrato = ""
 numero_saques = 0
-contas = []
 
 # Constantes
 LIMITE_SAQUES = 3
@@ -26,6 +25,10 @@ NUM_AGENCIA = "0001"
 # Listas para armazenar clientes e contas
 clientes = []
 contas = []
+
+##########################################################################
+############ Administração de clientes e contas bancárias ################
+##########################################################################
 
 # Função para cadastrar cliente
 def cadastrar_cliente(clientes):
@@ -107,6 +110,11 @@ def listar_contas(contas):
         cliente = conta["cliente"]
         print(f"Agência: {NUM_AGENCIA} | Conta: {conta['numero']} | Titular: {cliente['nome']}")
 
+
+##########################################################################
+####### Operações de depósito, saque e exibição de extrato bancário ######
+##########################################################################
+
 # Operação de depósito
 def depositar_valor(saldo, extrato):
     
@@ -157,6 +165,10 @@ def exibir_extrato(saldo, extrato):
     print("==========================================")
 
     return extrato
+
+#########################################################################
+############################ MENU PRINCIPAL #############################
+#########################################################################
 
 if __name__ == "__main__":
     while True:
