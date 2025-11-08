@@ -13,6 +13,50 @@ limite = 500
 extrato = ""
 numero_saques = 0
 LIMITE_SAQUES = 3
+clientes = []
+contas = []
+
+def cadastrar_cliente(clientes):
+    cpf = input("Informe o CPF do cliente: ")
+    
+    # Verifica se o CPF já está cadastrado
+    valida_cpf = [cliente for cliente in clientes if cliente["cpf"] == cpf]
+    
+    # Verifica se o CPF já está cadastrado, remove pontuação e mantém apenas dígitos
+    valida_cpf_string = ''.join(filter(str.isdigit, valida_cpf[0]["cpf"])) if valida_cpf else None
+
+    if valida_cpf_string:
+        print("Já existe cliente cadastrado com esse CPF.")
+        return
+    
+    nome = input("Informe o nome do cliente: ")
+    dt_nascimento = input("Informe a data de nascimento do cliente (DD/MM/AAAA): ")
+    endereco = input("Informe o endereço do cliente (logradouro, número - bairro - cidade/sigla estado): ")
+
+    # Validar formato do endereço: logradouro, número - bairro - cidade/sigla estado
+    partes_endereco = endereco.split(' - ')
+    if len(partes_endereco) != 3:
+        print("Formato de endereço inválido. Use: logradouro, número - bairro - cidade/sigla estado")
+        return
+    
+    logradouro_numero = partes_endereco[0]
+    bairro = partes_endereco[1]
+    cidade_estado = partes_endereco[2]
+    
+    # Valida se logradouro contém vírgula (separa logradouro do número)
+    if ',' not in logradouro_numero:
+        print("Formato de endereço inválido. O logradouro e número devem ser separados por vírgula.")
+        return
+    
+    # Valida se cidade/estado contém barra
+    if '/' not in cidade_estado:
+        print("Formato de endereço inválido. Cidade e estado devem ser separados por barra (/).")
+        return
+    
+    cliente = {"nome": nome, "cpf": cpf, "data_nascimento": dt_nascimento, "endereco": endereco}
+
+    clientes.append(cliente)
+    print("Cliente cadastrado com sucesso!")
 
 # Operação de depósito
 def depositar_valor(saldo, extrato):
