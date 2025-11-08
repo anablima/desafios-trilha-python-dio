@@ -19,8 +19,7 @@ Projeto educacional de sistema bancário simples. Toda a lógica hoje está conc
 ## Fluxos de Trabalho
 * Testes rápidos: `pytest -q`.
 * Cobertura local: `pytest --cov=desafio-1 --cov-report=term -q` (mínimo atual esperado >=15%).
-* Atualizar badge: executar `python scripts/update_badge.py` (CI já faz; só grava se mudou).
-* Propagar percentual no README: `python scripts/update_readme_coverage.py` (requer placeholder existente).
+* Atualização de badge e README: realizada apenas via GitHub Actions (workflow `tests.yml` em eventos de push). Evite rodar manualmente scripts de cobertura para não gerar diffs locais desnecessários.
 
 ## Convenções ao Evoluir
 * Antes de refatorar para pureza, manter interface compatível: funções retornam estado atualizado (ex.: saque retorna `saldo, extrato, numero_saques`).
