@@ -136,25 +136,15 @@ Sugestões para validar comportamentos:
 
 ## 📊 Cobertura e Integração Contínua
 
-<<<<<<< HEAD
 Pipeline executa testes com cobertura de linhas. A execução falha se cobertura < 70% (`--cov-fail-under=70`).
 
 Rodar localmente:
-=======
-Pipeline executa testes com cobertura de linhas e ramos (`--cov-branch`). Se disponível, a badge reflete cobertura de ramos; caso contrário, mostra cobertura de linhas. Falha se cobertura < 70% (`--cov-fail-under=70`).
-
-Rodar localmente (linha + ramos):
->>>>>>> 87fe096 (ci: adiciona workflow de testes com cobertura de ramos e atualiza badge)
 
 ```bash
-pytest --cov=desafio-1 --cov-branch --cov-report=term --cov-fail-under=70 -q
+pytest --cov=desafio-1 --cov-report=term --cov-fail-under=70 -q
 ```
 
-<<<<<<< HEAD
 Thresholds da badge (linhas): 90/80/70/60/50.
-=======
-Thresholds da badge (ramos ou linhas): 85/75/65/55/45.
->>>>>>> 87fe096 (ci: adiciona workflow de testes com cobertura de ramos e atualiza badge)
 
 Para elevar o padrão (ex.: 80%), ajuste a flag `--cov-fail-under` no workflow.
 
