@@ -6,7 +6,6 @@ menu = """
 [q] Sair
 
 => """
-
 # Variáveis globais
 saldo = 0
 limite = 500
