@@ -1,6 +1,6 @@
 """Aplicação bancária simples interativa.
 
-Para execução local: `python desafio-1.py`
+Para execução local: `python3 desafio-1.py`
 """
 
 menu = """
