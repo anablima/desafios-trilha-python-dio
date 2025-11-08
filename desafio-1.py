@@ -16,6 +16,7 @@ LIMITE_SAQUES = 3
 clientes = []
 contas = []
 
+# Função para cadastrar cliente
 def cadastrar_cliente(clientes):
     cpf = input("Informe o CPF do cliente: ")
     

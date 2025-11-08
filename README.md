@@ -117,26 +117,44 @@ Sugestões para validar comportamentos:
 3. Sacar valor maior que 500 (falha por exceder limite).
 4. Depositar valor negativo (falha por valor inválido).
 
-## 🔍 Considerações de Design
-
-- Uso de funções puras em vez de classe para simplicidade pedagógica.
-- Estado mantido em variáveis globais reatribuídas após cada operação.
-- `extrato` como string acumulada evita estrutura mais complexa (lista ou objeto).
+<!-- seção de design original removida por duplicação; ver seção mais completa abaixo -->
 
 ## 📦 Possíveis Melhorias Futuras
 
 - Persistência em arquivo (JSON / CSV) ou banco de dados.
-- Separar lógica em módulo (`bank.py`) e adicionar `main.py`.
-- Criar classe `Conta` e encapsular regras.
-- Adicionar testes unitários (ex.: `pytest`).
-- Internacionalização (mensagens em múltiplos idiomas).
-- Validar entradas com tratamento robusto (loop até valor válido).
+- Separar lógica em módulo (`banco.py`) e manter script interativo limpo.
+- Criar classe `Conta` e encapsular regras (possível uso de `dataclass`).
+- Adicionar internacionalização (mensagens em múltiplos idiomas).
+- Validar entradas de forma robusta (repetir prompt até valor válido).
 - Suporte a múltiplas contas / usuários.
-- Interface via `argparse` ou modo não interativo.
+- Interface via `argparse` ou modo não interativo para automação.
 
-## 📊 Cobertura e Integração Contínua
+## 🗂️ Estrutura do Código (Atual)
 
-Pipeline executa testes com cobertura de linhas. A execução falha se cobertura < 70% (`--cov-fail-under=70`).
+```text
+desafios-trilha-python-dio/
+├── desafio-1.py              # Script interativo com lógica bancária
+├── scripts/
+│   └── update_badge.py       # Geração de badge de cobertura
+├── tests/
+│   ├── test_desafio1.py      # Testes do fluxo interativo
+│   └── test_update_badge.py  # Testes do gerador de badge
+├── coverage-badge.svg        # Badge (gerado após testes)
+└── README.md                 # Documentação
+```
+
+## 🔍 Considerações de Design
+
+Script interativo acoplado a `input()` imprime mensagens diretamente.
+
+- Testes do fluxo interativo usam subprocesso (arquivo com hífen dificulta importação direta).
+- Script `scripts/update_badge.py` é separado e puro (apenas lê `.coverage`, gera SVG e imprime status). Facilita teste unitário.
+- `extrato` mantido como string acumulada para simplicidade pedagógica.
+- Evolução futura: extrair funções puras sem IO para módulo dedicado (`banco.py`) e/ou classe `Conta`.
+
+## 📄 Licença
+
+Este projeto está licenciado sob a licença **MIT**. Veja o arquivo `LICENSE` para o texto completo.
 
 Rodar localmente:
 
@@ -144,126 +162,43 @@ Rodar localmente:
 pytest --cov=desafio-1 --cov-report=term --cov-fail-under=70 -q
 ```
 
-Thresholds da badge (linhas): 90/80/70/60/50.
+Thresholds de cor da badge (linhas):
 
-Para elevar o padrão (ex.: 80%), ajuste a flag `--cov-fail-under` no workflow.
+| Cobertura ≥ | Cor (nome)    | Hex      |
+|-------------|---------------|----------|
+| 90%         | brightgreen   | #4c1     |
+| 80%         | green         | #2ea44f  |
+| 70%         | yellowgreen   | #a4a61d  |
+| 60%         | yellow        | #e3b341  |
+| 50%         | orange        | #fe7d37  |
+| <50%        | red           | #e05d44  |
 
-Observação: geração da badge não usa serviços externos.
-\n+Nota: O arquivo `coverage.xml` foi removido; a badge é gerada diretamente a partir de `.coverage`.
+O arquivo `coverage-badge.svg` só é atualizado se o conteúdo muda (idempotência).
+Nota: O arquivo `coverage.xml` foi removido; a badge é gerada diretamente a partir de `.coverage`.
 
-## 🤝 Contribuição
+O projeto já possui testes automatizados em `tests/`:
 
-Contribuições são bem-vindas! Abra uma issue ou envie um pull request descrevendo claramente a mudança proposta.
+- `test_desafio1.py`: Exercita operações de depósito, saque (limites, saldo insuficiente, exceder número de saques) e extrato usando execução do script (simulação de fluxo interativo).
+- `test_update_badge.py`: Cobre lógica de geração da badge (parse de `.coverage`, faixas de cor, idempotência, formatação do SVG).
 
-## 📄 Licença
-
-Este projeto está licenciado sob a licença **MIT**. Veja o arquivo `LICENSE` para o texto completo.
-
-Resumo rápido:
-
-- Uso, cópia, modificação e distribuição permitidos.
-- Inclua o aviso de copyright.
-- Sem garantias: uso por sua conta e risco.
-
-## 🧪 Testes Unitários (Roteiro Inicial)
-
-Atualmente o projeto é totalmente interativo e o arquivo possui hífen no nome (`desafio-1.py`), o que dificulta importar as funções para testes. Recomenda-se criar uma versão modular para teste.
-
-### Passo 1: Renomear ou extrair módulo
-
-Opções:
-
-1. Renomear `desafio-1.py` para `banco.py`.
-2. Criar novo arquivo `banco.py` contendo apenas as funções (sem loop `while True`).
-
-### Passo 2: Instalar dependências de teste
-
-```bash
-python -m pip install --upgrade pip
-pip install pytest
-```
-
-Opcional: criar `requirements.txt` com `pytest`.
-
-### Passo 3: Estrutura sugerida
-
-```text
-desafios-trilha-python-dio/
-├── banco.py              # Funções isoladas
-├── desafio-1.py          # Versão interativa (mantida)
-├── tests/
-│   └── test_banco.py     # Casos de teste
-└── README.md
-```
-
-### Passo 4: Adaptar funções para teste
-
-Para facilitar testes, poderia-se permitir que os valores fossem parâmetros, ex.:
-
-```python
-def depositar_valor(saldo, extrato, valor):
-    if valor > 0:
-        saldo += valor
-        extrato += f"Depósito: R$ {valor:.2f}\n"
-    return saldo, extrato
-```
-
-Mantendo a versão interativa, pode-se usar `monkeypatch` para simular `input()`.
-
-### Passo 5: Casos de teste mínimos
-
-1. Depósito válido atualiza saldo e extrato.
-2. Depósito inválido (zero ou negativo) não altera saldo.
-3. Saque válido diminui saldo e registra extrato.
-4. Saque maior que saldo falha (saldo inalterado).
-5. Saque maior que limite falha.
-6. Exceder número máximo de saques retorna erro.
-7. Extrato vazio exibe mensagem padrão.
-8. Extrato com múltiplas operações mantém ordem.
-
-### Exemplo de teste com `pytest` e `monkeypatch`
-
-```python
-import builtins
-from banco import depositar_valor, sacar_valor, exibir_extrato
-
-def test_deposito_valido(monkeypatch):
-    # Versão interativa: simula entrada '100'
-    monkeypatch.setattr(builtins, 'input', lambda _: '100')
-    saldo, extrato = depositar_valor(0, '')
-    assert saldo == 100
-    assert 'Depósito: R$ 100.00' in extrato
-
-def test_saque_excede_saldo(monkeypatch):
-    # Tenta sacar 200 com saldo 100
-    monkeypatch.setattr(builtins, 'input', lambda _: '200')
-    saldo, extrato, numero_saques = sacar_valor(100, 500, 0, 3, '')
-    assert saldo == 100  # inalterado
-    assert extrato == ''
-    assert numero_saques == 0
-
-def test_extrato_vazio(capsys):
-    exibir_extrato(0, '')
-    saida = capsys.readouterr().out
-    assert 'Não foram realizadas movimentações.' in saida
-```
-
-### Execução dos testes
+Para executar:
 
 ```bash
 pytest -q
 ```
 
-### Próximos passos avançados
+Com cobertura (falha se <70%):
 
-- Usar `dataclasses` para modelar Conta.
-- Cobrir cenários de concorrência (thread-safety) se evoluir para múltiplas operações simultâneas.
-- Adicionar relatórios de cobertura (`pytest --cov`).
+```bash
+pytest --cov=desafio-1 --cov-report=term --cov-fail-under=70 -q
+```
 
-## 👤 Autor
+### Próximos passos sugeridos
 
-Projeto mantido por Ana B. Lima (baseado em desafio da DIO).
-
----
+1. Extrair lógica bancária para módulo puro (`banco.py`) sem `input()`/`print()`, facilitando testes diretos.
+2. Adicionar testes unitários puros (sem subprocess) para validar regras de negócio isoladamente.
+3. Expandir cenários: múltiplos depósitos/saques em sequência, limites extremos (0, valores altos), formato do extrato.
+4. Introduzir objeto `Conta` com `dataclass` para reduzir número de parâmetros.
+5. Parametrizar limites (valor por saque, número de saques) via constantes ou config.
 
 Se este repositório foi útil para seus estudos, deixe uma estrela ⭐ e compartilhe!
