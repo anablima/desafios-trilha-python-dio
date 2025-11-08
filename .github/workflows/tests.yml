@@ -21,7 +21,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.13'
 
       - name: Install dependencies
         run: |
@@ -30,18 +30,20 @@ jobs:
 
       - name: Run tests (line coverage)
         run: |
-          pytest --cov=desafio-1 --cov-report=term --cov-fail-under=15 -q
+          pytest --cov=desafio-1 --cov-report=term --cov-fail-under=60 -q
 
-      - name: Generate coverage badge
+      - name: Generate coverage badge (push only, main/develop)
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
         run: |
           python scripts/update_badge.py
 
-      - name: Update README coverage placeholder
+      - name: Update README coverage placeholder (push only, main/develop)
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
         run: |
           python scripts/update_readme_coverage.py
 
-      - name: Commit coverage artifacts (push only)
-        if: github.event_name == 'push'
+      - name: Commit coverage artifacts (push only, main/develop)
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
         run: |
           CHANGED=0
           git diff --quiet coverage-badge.svg || CHANGED=1
@@ -52,6 +54,6 @@ jobs:
             git config user.name "github-actions"
             git config user.email "actions@github.com"
             git add coverage-badge.svg README.md
-            git commit -m "ci: update coverage badge & README coverage"
+            git commit -m "ci: update coverage badge & README coverage [skip ci]"
             git push
           fi

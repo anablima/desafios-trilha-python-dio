@@ -38,6 +38,8 @@ def test_update_readme_no_placeholder(tmp_path, monkeypatch):
     write_readme('Sem marcador de cobertura aqui.')
     monkeypatch.setattr(mod, 'read_pct_from_api', lambda: 50.0)
     r = mod.update_readme()
+    # Agora a função deve inserir automaticamente o placeholder após a badge (como não há badge, retorna False)
+    # Sem badge não insere; mantemos lógica de não alteração.
     assert r is False
     assert '50.0%' not in README_TMP.read_text(encoding='utf-8')
 
@@ -63,3 +65,14 @@ def test_update_readme_fallback_badge(tmp_path, monkeypatch):
     txt = README_TMP.read_text(encoding='utf-8')
     assert '61.0%' in txt
     assert '?v=61.0)' in txt
+
+def test_insercao_placeholder_ausente_com_badge(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    # README tem badge mas não tem placeholder
+    write_readme('![Coverage](coverage-badge.svg) Status do projeto.\n')
+    monkeypatch.setattr(mod, 'read_pct_from_api', lambda: 88.0)
+    r = mod.update_readme()
+    assert r is True
+    txt = README_TMP.read_text(encoding='utf-8')
+    assert '<!--COVERAGE_PCT-->88.0%<!--/COVERAGE_PCT-->' in txt
+    assert '?v=88.0)' in txt
