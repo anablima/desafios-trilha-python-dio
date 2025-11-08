@@ -36,15 +36,22 @@ jobs:
         run: |
           python scripts/update_badge.py
 
-      - name: Commit coverage badge (push only)
+      - name: Update README coverage placeholder
+        run: |
+          python scripts/update_readme_coverage.py
+
+      - name: Commit coverage artifacts (push only)
         if: github.event_name == 'push'
         run: |
-          if git diff --quiet coverage-badge.svg; then
-            echo "No badge changes"
+          CHANGED=0
+          git diff --quiet coverage-badge.svg || CHANGED=1
+          git diff --quiet README.md || CHANGED=1
+          if [ $CHANGED -eq 0 ]; then
+            echo "No coverage artifact changes"
           else
             git config user.name "github-actions"
             git config user.email "actions@github.com"
-            git add coverage-badge.svg
-            git commit -m "ci: update coverage badge"
+            git add coverage-badge.svg README.md
+            git commit -m "ci: update coverage badge & README coverage"
             git push
           fi

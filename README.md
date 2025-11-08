@@ -1,6 +1,6 @@
 # Desafios Trilha Python DIO
 
-![CI](https://github.com/anablima/desafios-trilha-python-dio/actions/workflows/tests.yml/badge.svg) ![Coverage](coverage-badge.svg)
+![CI](https://github.com/anablima/desafios-trilha-python-dio/actions/workflows/tests.yml/badge.svg) ![Coverage](coverage-badge.svg) Cobertura atual: <!--COVERAGE_PCT-->0%<!--/COVERAGE_PCT-->
 
 ## Desafio 1 – Sistema Bancário Simples (Depósito, Saque e Extrato)
 
@@ -158,7 +158,7 @@ Este projeto está licenciado sob a licença **MIT**. Veja o arquivo `LICENSE` p
 
 ## 📊 Cobertura e Testes
 
-É obrigatório executar os testes unitários em cada alteração. A cobertura mínima de linhas exigida pelo pipeline (atualmente relaxada para facilitar evolução inicial) é **15%**. Caso uma mudança reduza a cobertura abaixo desse valor, adicione testes ou refatore para restaurar o índice. Recomenda-se elevar progressivamente para 30%, 50%, 70% conforme amadurecer.
+É obrigatório executar os testes unitários em cada alteração. A cobertura mínima de linhas exigida pelo pipeline (atualmente relaxada para facilitar evolução inicial) é **15%**. Caso uma mudança reduza a cobertura abaixo desse valor, adicione testes ou refatore para restaurar o índice. Recomenda-se elevar progressivamente para 30%, 50%, 70% conforme amadurecer. O valor mais recente (atualizado automaticamente pelo CI) aparece no topo do README.
 
 Resumo da política:
 
