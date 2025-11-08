@@ -117,43 +117,35 @@ def listar_contas(contas):
 
 # Operação de depósito
 def depositar_valor(saldo, extrato):
-    
     valor = float(input("Informe o valor do depósito: "))
-
-    if valor > 0:
-        saldo += valor
-        extrato += f"Depósito: R$ {valor:.2f}\n"
-
-    else:
+    
+    # Tenta aplicar o depósito e captura possíveis erros
+    try:
+        novo_saldo, linha = aplicar_deposito(saldo, valor)
+        saldo = novo_saldo
+        extrato += linha
+    except ValueError:
         print("Operação falhou! O valor informado é inválido.")
-
     return saldo, extrato
 
 # Operação de saque
 def sacar_valor(saldo, limite, numero_saques, LIMITE_SAQUES, extrato):
-    
     valor = float(input("Informe o valor do saque: "))
-    excedeu_saldo = valor > saldo
-    excedeu_limite = valor > limite
-    excedeu_saques = numero_saques >= LIMITE_SAQUES
-
-    if excedeu_saldo:
-        print("Operação falhou! Você não tem saldo suficiente.")
-
-    elif excedeu_limite:
-        print("Operação falhou! O valor do saque excede o limite.")
-
-    elif excedeu_saques:
-        print("Operação falhou! Número máximo de saques excedido.")
-
-    elif valor > 0:
-        saldo -= valor
-        extrato += f"Saque: R$ {valor:.2f}\n"
-        numero_saques += 1
-
-    else:
-        print("Operação falhou! O valor informado é inválido.")
-
+    
+    # Tenta aplicar o saque e captura possíveis erros
+    try:
+        saldo, linha, numero_saques = aplicar_saque(saldo, limite, numero_saques, LIMITE_SAQUES, valor)
+        extrato += linha
+    except ValueError as e:
+        msg = str(e)
+        if msg == "saldo insuficiente":
+            print("Operação falhou! Você não tem saldo suficiente.")
+        elif msg == "limite excedido":
+            print("Operação falhou! O valor do saque excede o limite.")
+        elif msg == "limite de saques excedido":
+            print("Operação falhou! Número máximo de saques excedido.")
+        else:  # valor inválido
+            print("Operação falhou! O valor informado é inválido.")
     return saldo, extrato, numero_saques
 
 # Operação de exibição de extrato
@@ -165,6 +157,37 @@ def exibir_extrato(saldo, extrato):
     print("==========================================")
 
     return extrato
+
+##########################################################################
+######################## Funções Financeiras Brutas ######################
+##########################################################################
+
+def aplicar_deposito(saldo: float, valor: float):
+    """Retorna novo saldo e linha de extrato para um depósito válido.
+    Levanta ValueError em caso de valor inválido (<=0).
+    """
+    if valor <= 0:
+        raise ValueError("valor inválido")
+    return saldo + valor, f"Depósito: R$ {valor:.2f}\n"
+
+def aplicar_saque(saldo: float, limite: float, numero_saques: int, LIMITE_SAQUES: int, valor: float):
+    """Processa saque de forma bruta, retornando novo saldo, linha de extrato e contador atualizado.
+    Ordem de validação preservada: saldo -> limite -> número de saques -> valor > 0.
+    Levanta ValueError com mensagens específicas para cada condição violada:
+    - "saldo insuficiente"
+    - "limite excedido"
+    - "limite de saques excedido"
+    - "valor inválido"
+    """
+    if valor > saldo:
+        raise ValueError("saldo insuficiente")
+    if valor > limite:
+        raise ValueError("limite excedido")
+    if numero_saques >= LIMITE_SAQUES:
+        raise ValueError("limite de saques excedido")
+    if valor <= 0:
+        raise ValueError("valor inválido")
+    return saldo - valor, f"Saque: R$ {valor:.2f}\n", numero_saques + 1
 
 #########################################################################
 ############################ MENU PRINCIPAL #############################
