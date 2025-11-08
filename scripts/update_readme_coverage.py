@@ -42,12 +42,12 @@ def read_pct_from_badge() -> float | None:
     return None
 
 
-def determine_pct() -> int:
+def determine_pct() -> float:
     for fn in (read_pct_from_api, read_pct_from_badge):
         pct = fn()
         if pct is not None:
-            return int(round(pct))
-    return 0
+            return round(pct, 1)
+    return 0.0
 
 
 def update_readme() -> bool:
@@ -56,16 +56,20 @@ def update_readme() -> bool:
         return False
     content = README.read_text(encoding='utf-8')
     pct = determine_pct()
-    new_content, count = PLACEHOLDER_RE.subn(rf"\\1{pct}%\\3", content, count=1)
-    if count == 0:
+    pct_display = f"{pct:.1f}%"
+    match = PLACEHOLDER_RE.search(content)
+    if not match:
         print('Placeholder de cobertura não encontrado; nenhuma alteração.')
         return False
-    if new_content != content:
-        README.write_text(new_content, encoding='utf-8')
-        print(f'Atualizado placeholder de cobertura para {pct}%')
-        return True
-    print('Valor de cobertura inalterado no README.')
-    return False
+    atual = match.group(2).strip()
+    if atual == pct_display:
+        print('Valor de cobertura inalterado no README.')
+        return False
+    # Usa \g<1> para evitar confusão de referência de grupo com dígitos iniciais do percentual (ex.: 82.9)
+    new_content = PLACEHOLDER_RE.sub(rf"\g<1>{pct_display}\g<3>", content, count=1)
+    README.write_text(new_content, encoding='utf-8')
+    print(f'Atualizado placeholder de cobertura para {pct_display}')
+    return True
 
 
 def main() -> int:

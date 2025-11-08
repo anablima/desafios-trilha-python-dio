@@ -53,7 +53,8 @@ def parse_coverage() -> float:
     return 0.0
 
 def build_svg(pct: float) -> str:
-    pct_str = f"{pct:.0f}%"
+    # Exibe uma casa decimal (ex.: 82.9%) para maior precisão percebida.
+    pct_str = f"{pct:.1f}%"
     color = pct_to_color(pct)
     return f"""<svg xmlns='http://www.w3.org/2000/svg' width='125' height='20'>
 <linearGradient id='b' x2='0' y2='100%'><stop offset='0' stop-color='#bbb' stop-opacity='.1'/><stop offset='1' stop-opacity='.1'/></linearGradient>
