@@ -1,4 +1,7 @@
-from test.test_reprlib import r
+"""Aplicação bancária simples interativa.
+
+Para execução local: `python desafio-1.py`
+"""
 
 menu = """
 
