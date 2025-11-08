@@ -4,6 +4,8 @@ Não depende de coverage.xml. Thresholds (linhas): >=90 brightgreen, >=80 green,
 from __future__ import annotations
 from pathlib import Path
 import re
+import os
+import io
 
 BADGE_FILE = Path("coverage-badge.svg")
 COVERAGE_DATA = Path(".coverage")
@@ -17,6 +19,25 @@ def pct_to_color(pct: float) -> str:
     return "red"
 
 def parse_coverage() -> float:
+    """Obtém % de cobertura de linhas.
+
+    1. Tenta carregar via API da biblioteca coverage (formato binário/SQLite padrão).
+    2. Fallback para regex simples em caso de arquivo de teste textual (usado nos testes unitários).
+    """
+    # Primeiro: tentar via biblioteca coverage
+    try:
+        import coverage  # disponível via pytest-cov
+        if COVERAGE_DATA.exists():
+            cov = coverage.Coverage(data_file=str(COVERAGE_DATA))
+            cov.load()
+            # Usa buffer para descartar saída do relatório
+            dummy = io.StringIO()
+            pct = cov.report(file=dummy)  # retorna float
+            return float(pct)
+    except Exception:
+        # Qualquer erro cai no fallback regex
+        pass
+    # Fallback textual (para testes que criam arquivo artificial)
     try:
         text = COVERAGE_DATA.read_text(errors='ignore')
         executed_match = re.search(r'"executed"\s*:\s*(\d+)', text)
