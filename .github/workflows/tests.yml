@@ -32,18 +32,18 @@ jobs:
         run: |
           pytest --cov=desafio-1 --cov-report=term --cov-fail-under=60 -q
 
-      - name: Generate coverage badge (push only)
-        if: github.event_name == 'push'
+      - name: Generate coverage badge (push only, main/develop)
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
         run: |
           python scripts/update_badge.py
 
-      - name: Update README coverage placeholder (push only)
-        if: github.event_name == 'push'
+      - name: Update README coverage placeholder (push only, main/develop)
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
         run: |
           python scripts/update_readme_coverage.py
 
-      - name: Commit coverage artifacts (push only)
-        if: github.event_name == 'push'
+      - name: Commit coverage artifacts (push only, main/develop)
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
         run: |
           CHANGED=0
           git diff --quiet coverage-badge.svg || CHANGED=1

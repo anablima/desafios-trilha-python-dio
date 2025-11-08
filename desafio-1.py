@@ -1,14 +1,17 @@
 from test.test_reprlib import r
 
-
 menu = """
 
 [d] Depositar
 [s] Sacar
 [e] Extrato
 [q] Sair
+[u] Cadastrar usuário/cliente
+[c] Criar conta corrente
+[l] Listar contas
 
 => """
+
 # Variáveis globais
 saldo = 0
 limite = 500
@@ -98,6 +101,12 @@ def criar_conta_corrente(clientes):
     cliente["contas"].append(conta)
     return conta
 
+# Função listar contas
+def listar_contas(contas):
+    for conta in contas:
+        cliente = conta["cliente"]
+        print(f"Agência: {NUM_AGENCIA} | Conta: {conta['numero']} | Titular: {cliente['nome']}")
+
 # Operação de depósito
 def depositar_valor(saldo, extrato):
     
@@ -153,15 +162,18 @@ if __name__ == "__main__":
     while True:
         opcao = input(menu)
         
-        if opcao == "d":
+        if opcao == "u":
+            cadastrar_cliente(clientes)
+        elif opcao == "c":
+            criar_conta_corrente(clientes)
+        elif opcao == "l":
+            listar_contas(contas)
+        elif opcao == "d":
             saldo, extrato = depositar_valor(saldo, extrato)
-            
         elif opcao == "s":
             saldo, extrato, numero_saques = sacar_valor(saldo, limite, numero_saques, LIMITE_SAQUES, extrato)
-        
         elif opcao == "e":
             extrato = exibir_extrato(saldo, extrato)
-
         elif opcao == "q":
             break
 
