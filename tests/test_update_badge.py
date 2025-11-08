@@ -56,9 +56,10 @@ def test_parse_coverage_missing_file(monkeypatch, tmp_path):
 
 
 def test_build_svg_contains_percent_and_label():
-    svg = badge_module.build_svg(83.2)
+    svg = badge_module.build_svg(83.24)
     assert 'coverage' in svg
-    assert '83%' in svg  # arredondado sem casas decimais
+    # Agora apresenta uma casa decimal.
+    assert '83.2%' in svg
     # Verifica presença de cor (uma das hex possíveis)
     assert re.search(r"#[0-9a-f]{3,6}", svg)
 
@@ -74,7 +75,7 @@ def test_main_updates_badge(tmp_path, monkeypatch):
     rc1 = badge_module.main()
     assert rc1 == 0
     first_svg = badge_path.read_text()
-    assert '90%' in first_svg
+    assert '90.0%' in first_svg
 
     # Segunda execução idempotente (não muda conteúdo)
     rc2 = badge_module.main()
