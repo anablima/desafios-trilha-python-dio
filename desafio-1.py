@@ -12,7 +12,12 @@ saldo = 0
 limite = 500
 extrato = ""
 numero_saques = 0
+
+# Constantes
 LIMITE_SAQUES = 3
+NUM_AGENCIA = "0001"
+
+# Listas para armazenar clientes e contas
 clientes = []
 contas = []
 
